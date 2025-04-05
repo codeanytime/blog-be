@@ -11,7 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -33,6 +37,26 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+
+    @GetMapping("/oauth2/success")
+    public ResponseEntity<AuthResponse> handleOAuth2Success(
+            @AuthenticationPrincipal OAuth2User oauth2User) {
+        String email = oauth2User.getAttribute("email");
+        String name = oauth2User.getAttribute("name");
+        String pictureUrl = oauth2User.getAttribute("picture");
+
+        User user = userService.createOrUpdateGoogleUser(
+                oauth2User.getName(),
+                name,
+                email,
+                pictureUrl
+        );
+
+        String token = jwtService.generateToken(email);
+        UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPictureUrl(), user.getRole());
+
+        return ResponseEntity.ok(new AuthResponse(token, userDTO, null));
+    }
 
     @PostMapping("/google")
     public ResponseEntity<AuthResponse> authenticateWithGoogle(@RequestBody Map<String, String> request) {

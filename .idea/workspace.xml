@@ -5,46 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7511395c-cb55-416d-88a1-829e291c8683" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/jpa-buddy.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/BlogApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/AWSConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/DataInitializer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/WebConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/CategoryController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/ImageController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/MenuController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/PostController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/S3Controller.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/dto/AuthResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/dto/CategoryDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/dto/MenuItemDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/dto/PostDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/dto/UserDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/model/Category.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/model/Post.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/model/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/repository/CategoryRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/repository/PostRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/repository/UserRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/security/JwtAuthenticationFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/security/JwtTokenProvider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/CategoryService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/GoogleAuthService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/ImageService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/JwtService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/PostService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/S3Service.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/UserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blogdb.mv.db" beforeDir="false" afterPath="$PROJECT_DIR$/blogdb.mv.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,16 +68,32 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "h2"
+    ]
   }
 }]]></component>
-  <component name="RunManager" selected="HTTP Request.generated-requests | #113">
+  <component name="RunManager" selected="Spring Boot.BlogApplication">
     <configuration name="generated-requests | #112" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="112" requestIdentifier="#112" runType="Run single request">
       <method v="2" />
     </configuration>
     <configuration name="generated-requests | #113" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="113" requestIdentifier="#113" runType="Run single request">
       <method v="2" />
     </configuration>
+    <configuration name="generated-requests | #114" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="114" requestIdentifier="#114" runType="Run single request">
+      <method v="2" />
+    </configuration>
+    <configuration name="generated-requests | #115" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" index="115" requestIdentifier="#115" runType="Run single request">
+      <method v="2" />
+    </configuration>
     <configuration name="BlogApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <envs>
+        <env name="GOOGLE_CLIENT_ID" value="619774945627-bdc29jvencre2ls5pkjhj2392d7dk8q0.apps.googleusercontent.com" />
+        <env name="GOOGLE_CLIENT_SECRET" value="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" />
+        <env name="JWT_SECRET" value="blogPlatformSecretKey" />
+      </envs>
       <module name="blog-platform" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.blog.BlogApplication" />
       <extension name="coverage">
@@ -118,15 +102,34 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="false" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="HTTP Request.generated-requests | #112" />
+      <item itemvalue="HTTP Request.generated-requests | #113" />
+      <item itemvalue="HTTP Request.generated-requests | #114" />
+      <item itemvalue="HTTP Request.generated-requests | #115" />
+      <item itemvalue="Spring Boot.BlogApplication" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Spring Boot.BlogApplication" />
+        <item itemvalue="HTTP Request.generated-requests | #115" />
+        <item itemvalue="HTTP Request.generated-requests | #114" />
         <item itemvalue="HTTP Request.generated-requests | #113" />
         <item itemvalue="HTTP Request.generated-requests | #112" />
-        <item itemvalue="Spring Boot.BlogApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -138,7 +141,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1743777973068</updated>
-      <workItem from="1743777974366" duration="1310000" />
+      <workItem from="1743777974366" duration="12716000" />
     </task>
     <servers />
   </component>
