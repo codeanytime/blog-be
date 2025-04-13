@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public User findUserByEmail(String email) {
@@ -65,13 +69,41 @@ public class UserService implements UserDetailsService {
         );
     }
 
+    @Transactional
+    public User createUser(String username, String name, String email, String password) {
+        User user = new User();
+        user.setUsername(username);
+        user.setName(name);
+        user.setEmail(email);
+        // Hash the password before storing
+        user.setPassword(passwordEncoder.encode(password));
+        user.setPictureUrl("https://ui-avatars.com/api/?name=" + name.replace(" ", "+") + "&background=random");
+
+        // If first user, make them admin
+        if (userRepository.count() == 0) {
+            user.setRole("ADMIN");
+        } else {
+            user.setRole("USER");
+        }
+
+        return userRepository.save(user);
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = findUserByEmail(email);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // Try to find by email first (for Google auth users)
+        User user = userRepository.findByEmail(username).orElse(null);
+
+        // If not found by email, try by username (for traditional login)
+        if (user == null) {
+            user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found with username/email: " + username));
+        }
+
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                "", // No password as we're using Google Auth
+                user.getUsername() != null ? user.getUsername() : user.getEmail(),
+                user.getPassword() != null ? user.getPassword() : "", // Empty password for Google Auth
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );
     }

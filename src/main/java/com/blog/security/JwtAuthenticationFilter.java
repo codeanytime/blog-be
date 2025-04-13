@@ -13,13 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * @author thanhch
- * <p>
- * Date: 04/04/2025
- * <p>
- * Class: JwtAuthenticationFilter
- */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 

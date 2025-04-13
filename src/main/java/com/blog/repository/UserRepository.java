@@ -6,13 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * @author thanhch
- * <p>
- * Date: 04/04/2025
- * <p>
- * interface: UserRepository
- */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -20,7 +13,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByGoogleId(String googleId);
 
+    Optional<User> findByUsername(String username);
+
     boolean existsByEmail(String email);
 
     boolean existsByGoogleId(String googleId);
+
+    boolean existsByUsername(String username);
 }

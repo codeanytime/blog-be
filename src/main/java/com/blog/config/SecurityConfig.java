@@ -1,3 +1,4 @@
+
 package com.blog.config;
 
 import com.blog.security.JwtAuthenticationFilter;
@@ -8,6 +9,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -30,11 +33,22 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
+                // Public endpoints - no authentication required
                 .requestMatchers("/api/auth/**", "/login", "/oauth2/**").permitAll()
-                .requestMatchers("/api/posts", "/api/menu").permitAll()
-                .requestMatchers("/api/posts/{id}").permitAll()
+                .requestMatchers("/api/posts", "/api/posts/{id}").permitAll()
+                .requestMatchers("/api/categories/**").permitAll()
+                .requestMatchers("/api/menu/**").permitAll()
+                .requestMatchers("/api/images/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+
+                // Authenticated endpoints - require login but any role
                 .requestMatchers("/api/s3/upload").authenticated()
-                .requestMatchers("/api/posts/**").hasRole("ADMIN")
+
+                // Admin-only endpoints
+                .requestMatchers("/api/posts/create", "/api/posts/*/edit", "/api/posts/*/delete").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                // Any other endpoint requires authentication
                 .anyRequest().authenticated()
                 .and()
                 .oauth2Login()
@@ -49,13 +63,20 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
+        // Allow all origins to make development easier
+        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

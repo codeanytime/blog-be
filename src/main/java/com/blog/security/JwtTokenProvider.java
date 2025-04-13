@@ -2,30 +2,33 @@ package com.blog.security;
 
 import com.blog.model.User;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Base64;
 
-/**
- * @author thanhch
- * <p>
- * Date: 04/04/2025
- * <p>
- * Class: JwtTokenProvider
- */
 @Component
 public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
-    private String jwtSecret;
+    private String jwtSecretString;
 
     @Value("${jwt.expirationMs}")
     private long jwtExpirationMs;
+
+    private SecretKey getSigningKey() {
+        // Create a properly sized key from the secret
+        byte[] keyBytes = Base64.getEncoder().encode(jwtSecretString.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(String email) {
         Date now = new Date();
@@ -35,7 +38,7 @@ public class JwtTokenProvider {
                 .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -51,13 +54,14 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
     public String getUserEmailFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -65,8 +69,9 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
 
@@ -81,7 +86,10 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (SignatureException | MalformedJwtException | ExpiredJwtException |
                  UnsupportedJwtException | IllegalArgumentException e) {
@@ -89,4 +97,3 @@ public class JwtTokenProvider {
         }
     }
 }
-
