@@ -10,7 +10,9 @@ import com.blog.repository.CategoryRepository;
 import com.blog.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,19 @@ public class PostService {
         }
 
         return posts.map(this::convertToDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Post> getAllPublishedPosts(Pageable pageable) {
+        return postRepository.findAllByPublishedTrue(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> getFeaturedPosts() {
+        // Return the most recently published posts as featured
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Post> posts = postRepository.findAllByPublishedTrue(pageable);
+        return posts.getContent();
     }
 
     @Transactional(readOnly = true)
@@ -141,6 +157,14 @@ public class PostService {
         post.setTags(postDTO.getTags());
         post.setPublished(postDTO.isPublished());
 
+        // Generate or update slug
+        String slug = postDTO.getSlug();
+        // If slug is not provided, generate from title
+        if (slug == null || slug.isEmpty()) {
+            slug = generateSlug(postDTO.getTitle());
+        }
+        post.setSlug(slug);
+
         // Update categories
         if (postDTO.getCategories() != null && !postDTO.getCategories().isEmpty()) {
             // Clear existing categories
@@ -157,11 +181,41 @@ public class PostService {
         }
     }
 
+    /**
+     * Generates a SEO-friendly slug from a title.
+     *
+     * @param title The title to convert to a slug
+     * @return A SEO-friendly slug
+     */
+    private String generateSlug(String title) {
+        if (title == null || title.isEmpty()) {
+            return "";
+        }
+
+        // Convert to lowercase
+        String slug = title.toLowerCase();
+
+        // Replace spaces with hyphens
+        slug = slug.replaceAll("\\s+", "-");
+
+        // Remove special characters and replace with hyphens
+        slug = slug.replaceAll("[^a-z0-9-]", "-");
+
+        // Replace multiple consecutive hyphens with a single one
+        slug = slug.replaceAll("-+", "-");
+
+        // Remove leading and trailing hyphens
+        slug = slug.replaceAll("^-|-$", "");
+
+        return slug;
+    }
+
     private PostDTO convertToDTO(Post post) {
         PostDTO dto = new PostDTO();
         dto.setId(post.getId());
         dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
+        dto.setSlug(post.getSlug());
         dto.setCoverImage(post.getCoverImage());
         dto.setTags(post.getTags());
         dto.setPublished(post.isPublished());

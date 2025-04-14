@@ -28,6 +28,8 @@ public class PostDTO {
     @NotBlank(message = "Content is required")
     private String content;
 
+    private String slug;
+
     private String coverImage;
 
     private List<String> tags = new ArrayList<>();
