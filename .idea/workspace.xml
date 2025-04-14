@@ -5,20 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7511395c-cb55-416d-88a1-829e291c8683" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/blog/security/JwtKeyProvider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blogdb.mv.db" beforeDir="false" afterPath="$PROJECT_DIR$/blogdb.mv.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/blogdb.mv.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/config/WebConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/repository/PostRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/repository/PostRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/security/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/security/JwtAuthenticationFilter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/security/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/security/JwtTokenProvider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/JwtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/blog/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/blog/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -100,6 +94,10 @@
         <env name="GOOGLE_CLIENT_ID" value="619774945627-bdc29jvencre2ls5pkjhj2392d7dk8q0.apps.googleusercontent.com" />
         <env name="GOOGLE_CLIENT_SECRET" value="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" />
         <env name="JWT_SECRET" value="blogPlatformSecretKey" />
+        <env name="SPRING_DATASOURCE_URL" value="jdbc:postgresql://localhost:5432/blog-platform" />
+        <env name="SPRING_DATASOURCE_USERNAME" value="thanhch" />
+        <env name="SPRING_DATASOURCE_PASSWORD" value="123456" />
+        <env name="SPRING_DATASOURCE_DRIVER_CLASS_NAME" value="org.postgresql.Driver" />
       </envs>
       <module name="blog-platform" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.blog.BlogApplication" />

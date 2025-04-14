@@ -14,13 +14,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        System.out.println(frontendUrl);
         registry.addMapping("/**")
-                .allowedOrigins(frontendUrl)
+                .allowedOriginPatterns("*") // Use patterns instead of exact origins when using allowCredentials(true)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
-                .allowCredentials(true)
+                .allowCredentials(false) // Enable credentials for proper auth
                 .maxAge(3600);
     }
 }

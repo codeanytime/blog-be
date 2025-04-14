@@ -1,10 +1,12 @@
 package com.blog.service;
 
+import com.blog.security.JwtKeyProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,11 +20,15 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
-
     @Value("${jwt.expirationMs}")
     private long jwtExpiration;
+
+    private final JwtKeyProvider jwtKeyProvider;
+
+    @Autowired
+    public JwtService(JwtKeyProvider jwtKeyProvider) {
+        this.jwtKeyProvider = jwtKeyProvider;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -39,6 +45,23 @@ public class JwtService {
 
     public String generateToken(String email) {
         return generateToken(new HashMap<>(), email);
+    }
+
+    public String generateToken(com.blog.model.User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        claims.put("role", user.getRole());
+
+        System.out.println("JwtService generating token with user role: " + user.getRole());
+
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .setSubject(user.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String generateToken(
@@ -92,13 +115,6 @@ public class JwtService {
     }
 
     private Key getSigningKey() {
-        // Check if the secret key is Base64 encoded
-        try {
-            byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-            return Keys.hmacShaKeyFor(keyBytes);
-        } catch (Exception e) {
-            // If decoding fails or key is too short, use the key directly
-            return Keys.hmacShaKeyFor(secretKey.getBytes());
-        }
+        return jwtKeyProvider.getSigningKey();
     }
 }

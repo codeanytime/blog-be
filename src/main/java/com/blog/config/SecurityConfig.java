@@ -34,12 +34,15 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 // Public endpoints - no authentication required
+                .requestMatchers("/", "/api/test-connection").permitAll() // Allow root and test endpoint
                 .requestMatchers("/api/auth/**", "/login", "/oauth2/**").permitAll()
                 .requestMatchers("/api/posts", "/api/posts/{id}").permitAll()
+                .requestMatchers("/api/posts/public", "/api/posts/public/**").permitAll()
                 .requestMatchers("/api/categories/**").permitAll()
                 .requestMatchers("/api/menu/**").permitAll()
                 .requestMatchers("/api/images/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/error").permitAll() // Allow error page
 
                 // Authenticated endpoints - require login but any role
                 .requestMatchers("/api/s3/upload").authenticated()
@@ -49,11 +52,16 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                 // Any other endpoint requires authentication
-                .anyRequest().authenticated()
-                .and()
-                .oauth2Login()
-                .defaultSuccessUrl("/api/auth/oauth2/success")
-                .failureUrl("/api/auth/oauth2/failure");
+                .anyRequest().authenticated();
+
+        // Only configure OAuth2 login if client ID is provided
+        // This is needed to make the application startup even without Google credentials
+        String googleClientId = System.getenv("GOOGLE_CLIENT_ID");
+        if (googleClientId != null && !googleClientId.isEmpty()) {
+            http.oauth2Login()
+                    .defaultSuccessUrl("/api/auth/oauth2/success")
+                    .failureUrl("/api/auth/oauth2/failure");
+        }
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

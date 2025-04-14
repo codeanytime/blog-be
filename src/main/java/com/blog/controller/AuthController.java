@@ -165,7 +165,7 @@ public class AuthController {
             }
 
             // Generate token
-            String token = jwtService.generateToken(user.getEmail());
+            String token = jwtService.generateToken(user);
 
             // Create user DTO for response
             UserDTO userDTO = new UserDTO(

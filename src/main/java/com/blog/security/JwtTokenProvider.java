@@ -3,6 +3,7 @@ package com.blog.security;
 import com.blog.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,16 +19,18 @@ import java.util.Base64;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String jwtSecretString;
-
     @Value("${jwt.expirationMs}")
     private long jwtExpirationMs;
 
+    private final JwtKeyProvider jwtKeyProvider;
+
+    @Autowired
+    public JwtTokenProvider(JwtKeyProvider jwtKeyProvider) {
+        this.jwtKeyProvider = jwtKeyProvider;
+    }
+
     private SecretKey getSigningKey() {
-        // Create a properly sized key from the secret
-        byte[] keyBytes = Base64.getEncoder().encode(jwtSecretString.getBytes(StandardCharsets.UTF_8));
-        return Keys.hmacShaKeyFor(keyBytes);
+        return jwtKeyProvider.getSigningKey();
     }
 
     public String generateToken(String email) {
