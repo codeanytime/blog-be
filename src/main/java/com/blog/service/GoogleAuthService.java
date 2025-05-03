@@ -29,6 +29,11 @@ public class GoogleAuthService {
 
     public AuthResponse authenticateWithGoogle(String idTokenString) {
         try {
+            // Check if Google Client ID is configured
+            if (googleClientId == null || googleClientId.isEmpty()) {
+                throw new IllegalStateException("Google Client ID is not configured");
+            }
+
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                     new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singletonList(googleClientId))
@@ -54,15 +59,15 @@ public class GoogleAuthService {
             String token = tokenProvider.generateToken(user.getEmail());
 
             // Convert user to DTO
-            UserDTO userDTO = new UserDTO(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getPictureUrl(),
-                    user.getRole()
-            );
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(user.getId());
+            userDTO.setName(user.getName());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setPictureUrl(user.getPictureUrl());
+            userDTO.setRole(user.getRole());
+            userDTO.setRoles(new String[]{user.getRole()});
 
-            return new AuthResponse(token, userDTO, null);
+            return AuthResponse.fromUser(token, user, null);
         } catch (Exception e) {
             throw new RuntimeException("Google authentication failed: " + e.getMessage(), e);
         }

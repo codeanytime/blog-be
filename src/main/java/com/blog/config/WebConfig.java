@@ -12,6 +12,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${frontend.url}")
     private String frontendUrl;
 
+    @Value("${cors.allowed-origins}")
+    private String[] corsAllowedOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -19,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization")
-                .allowCredentials(false) // Enable credentials for proper auth
+                .allowCredentials(true) // Enable credentials for proper auth
                 .maxAge(3600);
     }
 }

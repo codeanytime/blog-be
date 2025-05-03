@@ -81,8 +81,22 @@ public class JwtTokenProvider {
         String email = claims.getSubject();
         String role = (String) claims.get("role");
 
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" +
-                (role != null ? role : "USER"));
+        // Debug the role from token
+        System.out.println("Role from JWT token: " + role);
+
+        // Make sure role is not null and handle ROLE_ prefix properly
+        String prefixedRole;
+        if (role == null || role.isEmpty()) {
+            prefixedRole = "ROLE_USER";  // Default role
+        } else if (role.startsWith("ROLE_")) {
+            prefixedRole = role; // Already has prefix
+        } else {
+            prefixedRole = "ROLE_" + role; // Add prefix
+        }
+
+        System.out.println("Using authority: " + prefixedRole);
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(prefixedRole);
 
         return new UsernamePasswordAuthenticationToken(email, "", Collections.singletonList(authority));
     }

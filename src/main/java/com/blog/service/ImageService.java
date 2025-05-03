@@ -15,15 +15,28 @@ import java.util.UUID;
 @Service
 public class ImageService {
 
-    @Autowired
+    @Autowired(required = false)
     private AmazonS3 s3Client;
 
     @Value("${aws.s3.bucket}")
     private String bucketName;
 
+    /**
+     * Check if S3 is configured and available
+     * @return true if S3 client is available
+     */
+    public boolean isS3Available() {
+        return s3Client != null;
+    }
+
     public String uploadImage(MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File cannot be empty");
+        }
+
+        // Check if S3 client is available
+        if (s3Client == null) {
+            throw new IllegalStateException("AWS S3 is not configured. Please provide AWS credentials.");
         }
 
         // Generate unique file name

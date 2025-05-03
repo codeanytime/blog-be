@@ -34,18 +34,20 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 // Public endpoints - no authentication required
-                .requestMatchers("/", "/api/test-connection").permitAll() // Allow root and test endpoint
+                .requestMatchers("/", "/api/test-connection", "/api/health", "/ping").permitAll() // Allow test and health endpoints
                 .requestMatchers("/api/auth/**", "/login", "/oauth2/**").permitAll()
                 .requestMatchers("/api/posts", "/api/posts/{id}").permitAll()
                 .requestMatchers("/api/posts/public", "/api/posts/public/**").permitAll()
                 .requestMatchers("/api/categories/**").permitAll()
                 .requestMatchers("/api/menu/**").permitAll()
                 .requestMatchers("/api/images/**").permitAll()
+                .requestMatchers("/api/public/**").permitAll() // Allow all public endpoints
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/error").permitAll() // Allow error page
 
                 // Authenticated endpoints - require login but any role
                 .requestMatchers("/api/s3/upload").authenticated()
+                .requestMatchers("/api/profile/**").authenticated()
 
                 // Admin-only endpoints
                 .requestMatchers("/api/posts/create", "/api/posts/*/edit", "/api/posts/*/delete").hasRole("ADMIN")
@@ -63,6 +65,22 @@ public class SecurityConfig {
                     .failureUrl("/api/auth/oauth2/failure");
         }
 
+        // Add custom entry point handler for authentication failure
+        http.exceptionHandling(handler -> {
+            handler.authenticationEntryPoint((request, response, authException) -> {
+                String skipAuthRedirect = request.getHeader("X-Skip-Auth-Redirect");
+                if (skipAuthRedirect != null && skipAuthRedirect.equalsIgnoreCase("true")) {
+                    // If header is present, return 401 instead of redirecting
+                    response.setStatus(401);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Authentication required\"}\n");
+                } else {
+                    // Otherwise, proceed with normal OAuth redirect
+                    response.sendRedirect("/oauth2/authorization/google");
+                }
+            });
+        });
+
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -71,7 +89,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow all origins to make development easier
+        // Use allowedOriginPatterns instead of allowedOrigins when allowCredentials is true
         configuration.addAllowedOriginPattern("*");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");

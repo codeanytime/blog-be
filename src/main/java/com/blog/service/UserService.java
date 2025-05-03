@@ -1,5 +1,6 @@
 package com.blog.service;
 
+import com.blog.dto.ProfileUpdateRequest;
 import com.blog.dto.UserDTO;
 import com.blog.model.User;
 import com.blog.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -59,14 +61,29 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    private UserDTO convertToDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getName(),
-                user.getEmail(),
-                user.getPictureUrl(),
-                user.getRole()
-        );
+    public UserDTO convertToDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setPictureUrl(user.getPictureUrl());
+        dto.setRole(user.getRole());
+        dto.setRoles(new String[]{user.getRole()});
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getCurrentUser() {
+        String email = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+        return getUserByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        return convertToDTO(user);
     }
 
     @Transactional
@@ -87,6 +104,55 @@ public class UserService implements UserDetailsService {
         }
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateUserProfile(Long userId, ProfileUpdateRequest updateRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setName(updateRequest.getName());
+        user.setUsername(updateRequest.getUsername());
+        user.setEmail(updateRequest.getEmail());
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateUserPassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateUserAvatar(Long userId, String avatarUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPictureUrl(avatarUrl);
+
+        return userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByUsername(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    /**
+     * Encode a plaintext password using the configured password encoder
+     */
+    public String encodePassword(String plainPassword) {
+        return passwordEncoder.encode(plainPassword);
     }
 
     @Override
