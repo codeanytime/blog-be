@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Lambda function for resizing images on S3 upload (Python)
+
+Parameters:
+  ImageBucket:
+    Type: String
+    Description: S3 bucket for image uploads (trigger source)
+
+Resources:
+  ImageResizeLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [lambda.amazonaws.com]
+            Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+        - PolicyName: LambdaS3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource:
+                  - !Sub arn:aws:s3:::${ImageBucket}/*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+
+  ImageResizeLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: ImageResizeLambdaPython
+      Handler: index.lambda_handler
+      Role: !GetAtt ImageResizeLambdaRole.Arn
+      Runtime: python3.12
+      Timeout: 60
+      MemorySize: 1024
+      Code:
+        ZipFile: |
+          import boto3
+          from PIL import Image
+          import os
+          from io import BytesIO
+
+          s3 = boto3.client('s3')
+
+          def lambda_handler(event, context):
+              for record in event['Records']:
+                  bucket = record['s3']['bucket']['name']
+                  key = record['s3']['object']['key']
+                  if not key.lower().endswith(('.jpg', '.jpeg', '.png')):
+                      continue
+                  response = s3.get_object(Bucket=bucket, Key=key)
+                  image_data = response['Body'].read()
+                  with Image.open(BytesIO(image_data)) as img:
+                      width, height = img.size
+                      new_width = 800
+                      new_height = int((new_width / width) * height)
+                      img = img.resize((new_width, new_height), Image.ANTIALIAS)
+                      buffer = BytesIO()
+                      img.save(buffer, format='JPEG')
+                      buffer.seek(0)
+                      resized_key = f"resized/{os.path.basename(key)}"
+                      s3.put_object(Bucket=bucket, Key=resized_key, Body=buffer, ContentType='image/jpeg')
+              return {'statusCode': 200, 'body': 'Image(s) resized successfully'}
+
+  ImageResizeLambdaS3Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt ImageResizeLambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub arn:aws:s3:::${ImageBucket}
+
+  S3Notification:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref ImageBucket
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/
+            Function: !GetAtt ImageResizeLambda.Arn
+
+Outputs:
+  LambdaFunctionArn:
+    Description: ARN of the image resize Lambda function
+    Value: !GetAtt ImageResizeLambda.Arn

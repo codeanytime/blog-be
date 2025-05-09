@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -130,10 +128,11 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Successfully created all posts individually");
 
             // Create main categories (level 1) matching the expected frontend categories
-            Category backendCategory = createCategory("Backend Development", "backend", "Articles about server-side technologies and development", true, 1, null);
+            Category backendCategory = createCategory("Backend", "backend", "Articles about server-side technologies and development", true, 1, null);
             Category devopsCategory = createCategory("DevOps", "devops", "Deployment, CI/CD, and infrastructure topics", true, 2, null);
             Category databaseCategory = createCategory("Database", "database", "SQL, NoSQL, and data management", true, 3, null);
-            Category frontendCategory = createCategory("Frontend Development", "frontend", "Client-side technologies and frameworks", true, 4, null);
+            Category frontendCategory = createCategory("Frontend", "frontend", "Client-side technologies and frameworks", true, 4, null);
+            Category awsCategory = createCategory("Aws", "aws", "Aws cloud journey", true, 4, null);
 
             // Save main categories
             backendCategory = categoryRepository.save(backendCategory);
@@ -177,8 +176,7 @@ public class DataInitializer implements CommandLineRunner {
 
             // Third post: AWS S3 - Docker as primary category, also in DevOps
             Post awsS3Post = postRepository.findById(3L).orElseThrow();
-            awsS3Post.addCategory(dockerCategory);      // Primary category
-            awsS3Post.addCategory(devopsCategory);
+            awsS3Post.addCategory(awsCategory);      // Primary category
 
             // Fourth post: Spring Security - Java as primary category, also in Backend
             Post springSecurity = postRepository.findById(4L).orElseThrow();

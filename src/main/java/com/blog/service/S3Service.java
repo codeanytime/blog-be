@@ -69,33 +69,33 @@ public class S3Service {
      * @throws IOException If file cannot be processed
      * @throws IllegalStateException If S3 client is not configured
      */
-    public String uploadFile(MultipartFile file, String folderPath) throws IOException {
-        // Check if S3 client is available
+    public String uploadFile(MultipartFile file, String baseFolderPath) throws IOException {
         if (amazonS3Client == null) {
             throw new IllegalStateException("AWS S3 is not configured. Please provide AWS credentials.");
         }
-        // Generate a unique filename
+
         String originalFilename = file.getOriginalFilename();
         String fileExtension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
 
-        String timestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(LocalDateTime.now());
-        String uniqueFilename = folderPath + "/" + timestamp + "-" + UUID.randomUUID().toString() + fileExtension;
+        // Use a date-based prefix to distribute objects
+        String datePrefix = DateTimeFormatter.ofPattern("yyyy/MM/dd").format(LocalDateTime.now());
+        String prefix = baseFolderPath + "/" + datePrefix;
 
-        // Set object metadata
+        // Generate a unique filename with UUID
+        String uniqueFilename = prefix + "/" + UUID.randomUUID().toString() + fileExtension;
+
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
 
-        // Upload file to S3
         amazonS3Client.putObject(
                 new PutObjectRequest(bucketName, uniqueFilename, file.getInputStream(), metadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead)
         );
 
-        // Return the public URL
         return amazonS3Client.getUrl(bucketName, uniqueFilename).toString();
     }
 
